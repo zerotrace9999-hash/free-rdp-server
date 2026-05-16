@@ -16,7 +16,10 @@ jobs:
           Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name 'fDenyTSConnections' -Value 0
           Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
 
-      - name: Start Free Tunnel via Pinggy
+      - name: Start Tunnel via Localtunnel
         run: |
-          # فتح النفق باستخدام العنوان المخصص للـ TCP مع خيارات الاستقرار
-          ssh -T -N -o StrictHostKeyChecking=no -R 0:localhost:3389 rdp@ran.pinggy.io
+          # 1. تثبيت أداة localtunnel عبر npm المدمج في السيرفر
+          npm install -g localtunnel
+          
+          # 2. تشغيل النفق وتحويل المنفذ 3389
+          lt --port 3389
