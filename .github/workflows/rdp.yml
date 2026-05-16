@@ -18,5 +18,5 @@ jobs:
 
       - name: Start Free Tunnel via Pinggy
         run: |
-          # فتح نفق TCP مجاني للمنفذ 3389 بدون الحاجة لبطاقة أو تحميل برامج
-          ssh -o StrictHostKeyChecking=no -R 0:localhost:3389 tcp.pinggy.io
+          # فتح النفق باستخدام العنوان المخصص للـ TCP مع خيارات الاستقرار
+          ssh -T -N -o StrictHostKeyChecking=no -R 0:localhost:3389 rdp@ran.pinggy.io
