@@ -8,24 +8,24 @@ jobs:
     steps:
       - name: Download and Setup ngrok
         run: |
-          # 1. تحميل الملف
+          # 1. تحميل ملف الأداة لبيئة ويندوز
           Invoke-WebRequest https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-stable-windows-amd64.zip -OutFile ngrok.zip
           
-          # 2. فك الضغط في المجلد الحالي مباشرة باستخدام نقطة (.) لضمان عدم إنشاء مجلد فرعي
+          # 2. فك الضغط في المسار الحالي مباشرة
           Expand-Archive -Path ngrok.zip -DestinationPath . -Force
           
-          # 3. إدخال التوكن (تأكد من وضع توكن ngrok الحقيقي الخاص بك هنا)
-          ./ngrok.exe authtoken YOUR_AUTH_TOKEN
+          # 3. إعداد الرمز الخاص بك للمصادقة
+          ./ngrok.exe authtoken 3Dny8spLv8uy1mC6W3WXevaZHbV_3ffKPvZrwzbbPe36Apvjf
 
       - name: Enable RDP and Start Tunnel
         run: |
-          # 1. إنشاء المستخدم وإضافته للمسؤولين
+          # 1. إنشاء حساب صلاحيات المسؤول
           net user kamel123 MyStrong123 /add
           net localgroup administrators kamel123 /add
           
-          # 2. تفعيل بروتوكول الـ RDP وتعديل جدار الحماية
+          # 2. تفعيل خدمة سطح المكتب عن بعد وفتح جدار الحماية
           Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name 'fDenyTSConnections' -Value 0
           Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
           
-          # 3. فتح نفق الاتصال عبر منفذ RDP
+          # 3. بدء نفق الاتصال عبر بروتوكول TCP للمنفذ 3389
           ./ngrok.exe tcp 3389
