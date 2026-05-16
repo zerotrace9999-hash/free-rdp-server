@@ -16,10 +16,11 @@ jobs:
           Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name 'fDenyTSConnections' -Value 0
           Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
 
-      - name: Start Tunnel via Localtunnel
+      - name: Start TCP Tunnel via Bore
         run: |
-          # 1. تثبيت أداة localtunnel عبر npm المدمج في السيرفر
-          npm install -g localtunnel
+          # 1. تحميل أداة Bore وتجهيزها
+          Invoke-WebRequest https://github.com/ekzhang/bore/releases/download/v0.5.1/bore-v0.5.1-x86_64-pc-windows-msvc.zip -OutFile bore.zip
+          Expand-Archive -Path bore.zip -DestinationPath . -Force
           
-          # 2. تشغيل النفق وتحويل المنفذ 3389
-          lt --port 3389
+          # 2. فتح نفق مباشر لمنفذ الـ RDP نحو سيرفر Bore العام
+          ./bore.exe local 3389 --to bore.pub
