@@ -6,21 +6,25 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-      - name: Enable RDP and Create User
+      - name: Enable RDP and Bypass NLA
         run: |
           # 1. إنشاء حساب المسؤول
           net user kamel123 MyStrong123 /add
           net localgroup administrators kamel123 /add
           
-          # 2. تفعيل خدمة سطح المكتب عن بعد وفتح جدار الحماية
+          # 2. تفعيل خدمة سطح المكتب عن بعد
           Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name 'fDenyTSConnections' -Value 0
+          
+          # 3. الضربة القاضية: تعطيل الـ NLA لضمان عدم طرد الاتصال القادم عبر النفق
+          Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name 'UserAuthentication' -Value 0
+          Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name 'SecurityLayer' -Value 1
+          
+          # 4. فتح جدار الحماية
           Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
 
       - name: Start TCP Tunnel via Bore
         run: |
-          # 1. تحميل أداة Bore وتجهيزها
+          # تحميل وتشغيل أداة Bore
           Invoke-WebRequest https://github.com/ekzhang/bore/releases/download/v0.5.1/bore-v0.5.1-x86_64-pc-windows-msvc.zip -OutFile bore.zip
           Expand-Archive -Path bore.zip -DestinationPath . -Force
-          
-          # 2. فتح نفق مباشر لمنفذ الـ RDP نحو سيرفر Bore العام
           ./bore.exe local 3389 --to bore.pub
